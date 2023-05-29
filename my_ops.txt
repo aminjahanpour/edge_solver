@@ -1,0 +1,119 @@
+allowed opcodes:
+    00010 11
+    01010 11
+    10110 11
+    11110 11
+
+
+
+
+
+
+gcd1
+
+R-type
+
+#define MATCH_GCD1 0xb
+#define MASK_GCD1 0xfe00707f
+...
+DECLARE_INSN(gcd1, MATCH_GCD1,MASK_GCD1)
+
+gcd1    rd rs1 rs2 31..25=0                     14..12=0        6..2=2      1..0=3
+                   0000000   00000    00000     000       00000 00010       11
+                   1111111   00000    00000     111       00000 11111       11
+                   func7     rs2      rs1       funct3    rd    Opcode
+
+
+
+gcd2
+
+R-type
+
+#define MATCH_GCD2 0x100b
+#define MASK_GCD2 0xfe00707f
+...
+DECLARE_INSN(gcd2, MATCH_GCD2,MASK_GCD2)
+
+gcd2    rd rs1 rs2 31..25=0                     14..12=1        6..2=2      1..0=3
+                   0000000   00000    00000     001       00000 00010       11
+                   1111111   00000    00000     111       00000 11111       11
+                   func7     rs2      rs1       funct3    rd    Opcode
+
+
+
+
+
+
+fact
+
+I-type
+
+#define MATCH_FACT 0x2b
+#define MASK_FACT 0x7f
+...
+DECLARE_INSN(fact, MATCH_FACT,MASK_FACT)
+
+fact    rd imm20                                    6..2=10     1..0=3
+                   00000000000000000000       00000 01010       11
+                   00000000000000000000       00000 11111       11
+                   imm                        rd    Opcode
+
+
+
+oact
+
+I-type
+
+#define MATCH_OACT 0x27
+#define MASK_OACT 0x7f
+...
+DECLARE_INSN(oact, MATCH_OACT,MASK_OACT)
+
+oact    rd imm20                                    6..2=9      1..0=3
+                   00000000000000000000       00000 01001       11
+                   00000000000000000000       00000 11111       11
+                   imm                        rd    Opcode
+
+
+
+
+
+./configure --prefix=/opt/riscv_1
+
+1)
+
+/home/amin/riscv-gnu-toolchain/binutils/opcodes/riscv-opc.c:
+
+    const struct riscv_opcode riscv_opcodes[] =
+    {
+    /* name, xlen, isa, operands, match, mask, match_func, pinfo.  */
+
+
+    {"gcd1", 0,  INSN_CLASS_I,"d,s,t",MATCH_GCD1,MASK_GCD1,match_opcode,0},
+    {"gcd2", 0,  INSN_CLASS_I,"d,s,t",MATCH_GCD2,MASK_GCD2,match_opcode,0},
+    {"fact",0,  INSN_CLASS_I,"d,a",MATCH_FACT,MASK_FACT,match_opcode,0},
+    {"oact",0,  INSN_CLASS_I,"d,a",MATCH_OACT,MASK_OACT,match_opcode,0},
+
+
+
+
+2)
+/home/amin/riscv-gnu-toolchain/binutils/include/opcode/riscv-opc.h
+/home/amin/riscv-gnu-toolchain/gdb/include/opcode/riscv-opc.h
+
+
+    /* Instruction opcode macros.  */
+#define MATCH_GCD1 0xb
+#define MASK_GCD1 0xfe00707f
+#define MATCH_GCD2 0x100b
+#define MASK_GCD2 0xfe00707f
+#define MATCH_FACT 0x2b
+#define MASK_FACT 0x7f
+#define MATCH_OACT 0x27
+#define MASK_OACT 0x7f
+
+
+DECLARE_INSN(gcd1, MATCH_GCD1, MASK_GCD1)
+DECLARE_INSN(gcd2, MATCH_GCD2, MASK_GCD2)
+DECLARE_INSN(fact, MATCH_FACT, MASK_FACT)
+DECLARE_INSN(oact, MATCH_OACT, MASK_OACT)

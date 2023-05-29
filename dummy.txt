@@ -1,0 +1,9 @@
+dfksdfjh
+
+start
+//num_dec_def
+    localparam                                              num_dec             = 2;
+    reg                 [address_len - 1 : 0]               budget              ;
+end
+dfksdfjh
+
