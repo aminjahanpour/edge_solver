@@ -1,7 +1,7 @@
 # Edge Solver
 This repo contains the Edge Solver source code running based on an RV32IF RISC-V computing core all written in Verilog.
 
-As always, no licensing. You could do what you want with it :)
+As always, no licensing. Free to public with no limitation :)
 
 
 
