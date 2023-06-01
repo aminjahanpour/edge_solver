@@ -12,14 +12,4 @@ except:
 os.system('clear')
 os.system('apio sim')
 
-"""
-assign clk = CLK;
-assign resetn = RESET;
-
-
-wire clk;    // internal clock
-wire resetn; // internal reset signal, goes low on reset
-   
-"""
-
 

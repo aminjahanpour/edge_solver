@@ -10,28 +10,29 @@ module SOC (
 	reg soc_verbose = 0;
 
 
-	localparam register_width     	= 32;
-	localparam main_memory_depth 	= 7860;
-	localparam registers_count 		= 32;
+	localparam 								register_width     		= 32;       // because this is an RV32IF
+	localparam 								main_memory_depth 		= 7860;     // this value times 32 gives the total memory in bits
+	localparam 								registers_count 		= 32;       // again because this is an RV32
 
-	reg			[24 - 1 : 0]  instr_counter;
-
-
-	reg							exception;
+	reg					[24 - 1 : 0]  		instr_counter;						// this is just a counter to keep track of the instructions
 
 
-	localparam					max_time = 10_000_000;
+	reg										exception;							// this flag is raised when any run-time exception occurs
 
 
-	reg							time_violation;
+	localparam								max_time 				= 10_000_000;		// this is the maximum time I allow the code to run on the web
+																						// if you are running this on your own machine you can increase
+																						// it as much as you want
 
-	wire [63:0] display_float_fpuOut = toolkit.display_float(fpuOut);
-	wire [63:0] display_float_rs1_f  = toolkit.display_float(rs1_f);
-	wire [63:0] display_float_rs2_f  = toolkit.display_float(rs2_f);
-	wire [63:0] display_float_rs3_f  = toolkit.display_float(rs3_f);
+	reg										time_violation;						// this is raised when a code violates the max_time in a demo
+
+	wire 				[63:0] 				display_float_fpuOut = toolkit.display_float(fpuOut);	// used just to display a float number
+	wire 				[63:0] 				display_float_rs1_f  = toolkit.display_float(rs1_f);	// used just to display a float number
+	wire 				[63:0] 				display_float_rs2_f  = toolkit.display_float(rs2_f);	// used just to display a float number
+	wire 				[63:0] 				display_float_rs3_f  = toolkit.display_float(rs3_f);	// used just to display a float number
 
 
-    reg[32 - 1 :1] reg_labels [registers_count - 1: 0];
+    reg					[32 - 1 :1] 		reg_labels 		[registers_count - 1: 0];				// this is just for display the integer resisters by their official laber
 
 	initial begin 
 		reg_labels[0 ] ="zero";
@@ -70,25 +71,10 @@ module SOC (
 	end
 
 
-	localparam exceptions_count = 10;
-	reg[256 - 1 :1] exception_labels [exceptions_count - 1: 0];
-	initial begin 
-		exception_labels[0] = "";
-		exception_labels[1] = "division overflow";
-		exception_labels[2] = "division by zero";
-		exception_labels[3] = "division results not valid";
-		exception_labels[4] = "sqrt result not valid";
-		exception_labels[5] = "negative input to sqrt";
-		exception_labels[6] = "";
-		exception_labels[7] = "";
-		exception_labels[8] = "";
-		exception_labels[9] = "";
-	end
 
 
 
-
-    reg[32 - 1 :1] reg_labels_float [registers_count - 1: 0];
+    reg					[32 - 1 :1] 		reg_labels_float [registers_count - 1: 0];				// this is just for display the float resisters by their official laber
 
 	initial begin 
 
@@ -130,17 +116,37 @@ module SOC (
 
 
 
+	localparam 								exceptions_count 		= 10;
+	reg					[256 - 1 :1] 		exception_labels [exceptions_count - 1: 0];				// these are our run-time exceptions
+	initial begin 
+		exception_labels[0] = "";
+		exception_labels[1] = "division overflow";
+		exception_labels[2] = "division by zero";
+		exception_labels[3] = "division results not valid";
+		exception_labels[4] = "sqrt result not valid";
+		exception_labels[5] = "negative input to sqrt";
+		exception_labels[6] = "";
+		exception_labels[7] = "";
+		exception_labels[8] = "";
+		exception_labels[9] = "";
+	end
+
 
 
 
 	// REGISTER FILE
 
+	/*
+	same module is used for both intger and float register files.
+	to distinguish, we use `.is_float` parameter
+	*/
+
 	
-	wire  [register_width - 1 : 0]    	rs1;
-	wire  [register_width - 1 : 0]    	rs2;
-	wire  [register_width - 1 : 0]    	rs3;
-	wire  [register_width - 1 : 0] 		writeBackData;
-	reg        							writeBackEn;
+	wire  				[register_width - 1 : 0]    	rs1;
+	wire  				[register_width - 1 : 0]    	rs2;
+	wire  				[register_width - 1 : 0]    	rs3;
+	wire  				[register_width - 1 : 0] 		writeBackData;
+	reg        											writeBackEn;
 
 
 	register_file  #(
@@ -168,11 +174,11 @@ module SOC (
 
 	// REGISTER FILE FLOAT
 	
-	wire  [register_width - 1 : 0]    	rs1_f;
-	wire  [register_width - 1 : 0]    	rs2_f;
-	wire  [register_width - 1 : 0]    	rs3_f;
-	wire  [register_width - 1 : 0] 		writeBackData_f;
-	reg        							writeBackEn_f;
+	wire  				[register_width - 1 : 0]    	rs1_f;
+	wire  				[register_width - 1 : 0]    	rs2_f;
+	wire  				[register_width - 1 : 0]    	rs3_f;
+	wire  				[register_width - 1 : 0] 		writeBackData_f;
+	reg        											writeBackEn_f;
 
 
 	register_file  #(
@@ -203,16 +209,17 @@ module SOC (
 
 
 
+	reg   				[register_width - 1   :  0]    		instr;					// this is the instruction that we read each time from the program.hex				
 
 
 
 	// MEMORY
-
-	reg   	[register_width - 1   :  0]    	instr;
-
-
-
-
+	/* 
+		This is the memory module that contains both the program instructions and the ram 
+		As you can see in below it is always initiated by the program.hex
+		which in turn is generated from the elf file
+		which in turn is generated by the liner and g++
+	*/
 
 
 	reg                                             		mem_read_enable    ;
@@ -239,7 +246,8 @@ module SOC (
 	);
 
     
-	assign mem_wdata = (isFloatIO) ? rs2_f : rs2;
+	// what we are going to write on the memory depends on the instruction being integer or float
+	assign mem_wdata = (isFloatIO) ? rs2_f : rs2;	
 
 
 
@@ -248,7 +256,9 @@ module SOC (
 
 
 
-
+	// this is the generic output file in which we print our output
+	// because here we do not have access to printf or anything like that
+	// so we have to print into file
 	integer print_output_file;
 
 
@@ -269,7 +279,7 @@ module SOC (
 
 	// Decoder
 
-    // The 10 RISC-V instructions
+    // The 10 RISC-V basic instructions
     wire isALUreg  =  ((instr[6:0] == 7'b0110011) || (instr[6:0] == 7'b0111011)); // rd <- rs1 OP rs2   
     wire isALUimm  =  ((instr[6:0] == 7'b0010011) || (instr[6:0] == 7'b0010011) || (instr[6:0] == 7'b0011011)); // rd <- rs1 OP Iimm
     wire isBranch  =  ( instr[6:0] == 7'b1100011); // if(rs1 OP rs2) PC<-PC+Bimm
@@ -281,9 +291,8 @@ module SOC (
     wire isStore   =  ((instr[6:0] == 7'b0100011) || (instr[6:0] == 7'b0100111)); // mem[rs1+Simm] <- rs2
     wire isSYSTEM  =  ( instr[6:0] == 7'b1110011); // special
 
+
 	// Floating point instructions
-
-
 	wire isOpFp	   =  	(
 						((instr[6:0] == 7'b1010011) && (instr[31:25] != 7'b0001100) && (instr[31:25] != 7'b0101100) ) +      // rd <- rs1 OP rs2 
 						(instr[6:0] == 7'b1000011) + // FMADD.S 
@@ -313,36 +322,46 @@ module SOC (
 						 	(instr[6:0] == 7'b0100111) 		//FSW
 						);
 
-	//  New instructions
+	/*
+		isPAR:
+			These are the new instructions I introduced to work with Edge Solver
+		
+		isPRINT:
+			These are two new instructions used to print integer or float values into `print_output_file` file
+			which was declaired above
+	*/
     wire isPAR     =  (instr[6:0] == 7'b0001011);
     wire isPRINT   =  (instr[6:0] == 7'b0101011);
 
+
+	// see if we have a division or an sqrt. they have their own modules. not part of the main FPU.
 	wire isDIV  = (instr[6:0] == 7'b1010011) && (funct7 == 7'b0001100);
 	wire isSQRT = (instr[6:0] == 7'b1010011) && (funct7 == 7'b0101100);
 
     // The 5 immediate formats
-    wire [31:0] Uimm={    instr[31],   instr[30:12], {12{1'b0}}};
-    wire [31:0] Iimm={{21{instr[31]}}, instr[30:20]};
-    wire [31:0] Simm={{21{instr[31]}}, instr[30:25],instr[11:7]};
-    wire [31:0] Bimm={{20{instr[31]}}, instr[7],instr[30:25],instr[11:8],1'b0};
-    wire [31:0] Jimm={{12{instr[31]}}, instr[19:12],instr[20],instr[30:21],1'b0};
+    wire 			[31:0] 		Uimm	={    instr[31],   instr[30:12], {12{1'b0}}};
+    wire 			[31:0] 		Iimm	={{21{instr[31]}}, instr[30:20]};
+    wire 			[31:0] 		Simm	={{21{instr[31]}}, instr[30:25],instr[11:7]};
+    wire 			[31:0] 		Bimm	={{20{instr[31]}}, instr[7],instr[30:25],instr[11:8],1'b0};
+    wire 			[31:0] 		Jimm	={{12{instr[31]}}, instr[19:12],instr[20],instr[30:21],1'b0};
 
 
     // Source and destination registers
-    wire [5 - 1 : 0] rs1Id = (isSYSTEM) ? 15 : instr[19:15];
-    wire [5 - 1 : 0] rs2Id = instr[24:20];
-    wire [5 - 1 : 0] rs3Id = instr[31:27];
-    wire [5 - 1 : 0] rdId  = instr[11:7];
+    wire 			[5 - 1 : 0] rs1Id 	= (isSYSTEM) ? 15 : instr[19:15];
+    wire 			[5 - 1 : 0] rs2Id 	= instr[24:20];
+    wire 			[5 - 1 : 0] rs3Id 	= instr[31:27];
+    wire 			[5 - 1 : 0] rdId  	= instr[11:7];
 
     // function codes
-    wire [2:0] funct3 = instr[14:12];
-    wire [6:0] funct7 = instr[31:25];
+    wire 			[2:0] 		funct3 	= instr[14:12];
+    wire 			[6:0] 		funct7 	= instr[31:25];
 
 
 
 
 
-
+	// there are expections where a float intruction needs to write its results into the integer resigter file
+	// here we flag that
 	wire	float_operation_writing_to_integer_register = (isFloatComparison | isFMVXW | isFCVTWS);
    
 
@@ -386,14 +405,6 @@ module SOC (
 
 
 	// saving from register to memory
-
-	// assign mem_wdata = rs2;
-
-	// assign mem_wdata[ 7: 0] = rs2[7:0];
-	// assign mem_wdata[15: 8] = loadstore_addr[0] ? rs2[7:0]  : rs2[15: 8];
-	// assign mem_wdata[23:16] = loadstore_addr[1] ? rs2[7:0]  : rs2[23:16];
-	// assign mem_wdata[31:24] = loadstore_addr[0] ? rs2[7:0]  :
-	// 				loadstore_addr[1] ? rs2[15:8] : rs2[31:24];
 
 	wire [3:0] STORE_wmask =
 			mem_byteAccess      ?
@@ -446,11 +457,15 @@ module SOC (
 
 	// ALU
 
-	wire 			[register_width - 1	:	0] 	aluIn1 = rs1;
-	wire 			[register_width - 1	:	0] 	aluIn2 = (isALUreg) ? rs2 : Iimm;
-	wire 			[register_width - 1 :	0] 	aluOut;
-	reg										takeBranch;
-   	wire 			[5 - 1 :0] 					shift_amount = isALUreg ? rs2[4:0] : instr[24:20];
+	/*
+	This ALU only works with integers so that is why its inputs are wired the way you see in below.
+	*/
+
+
+	wire 			[register_width - 1	:	0] 		aluIn1 = rs1;											// ALU input 1
+	wire 			[register_width - 1	:	0] 		aluIn2 = (isALUreg) ? rs2 : Iimm;						// ALU input 2
+	wire 			[register_width - 1 :	0] 		aluOut;													// ALU output
+   	wire 			[5 - 1 :0] 						shift_amount = isALUreg ? rs2[4:0] : instr[24:20];
 
 
 	ALU  #(
@@ -465,6 +480,9 @@ module SOC (
 			.aluOut(aluOut)
 		);
  
+
+
+	reg												takeBranch;
 
 	always @(*) begin
 

@@ -169,7 +169,7 @@ module ALU #(
 				 in rs2, and the high bits of rs1 are filled with zeros, 
 				 and the result is written into rd
 
-			SRA rd,rs1,rs2
+			SRA rd,rs1,rs2s
 				Funct7==7’b010_0000,
 				Arithmetic shift right
 				Arithmetic shift rs1 to the right according to the specified number
