@@ -207,11 +207,11 @@ always @(posedge reset) begin
     //     // $display("%b", $random);
     // end
 
-    U10_output_file_main_mem =                                $fopen("./dumps/U10_output_file_main_mem.txt", "w");
+    // U10_output_file_main_mem =                                $fopen("./dumps/U10_output_file_main_mem.txt", "w");
 
-    N0_output_file_random_values =                            $fopen("./dumps/N0_output_file_random_values.txt", "w");
+    // N0_output_file_random_values =                            $fopen("./dumps/N0_output_file_random_values.txt", "w");
 
-    V1_output_file_evaluations =                              $fopen("./dumps/V1_output_file_evaluations.txt", "w");
+    // V1_output_file_evaluations =                              $fopen("./dumps/V1_output_file_evaluations.txt", "w");
 
 
 

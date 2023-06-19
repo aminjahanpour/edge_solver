@@ -640,7 +640,10 @@ module SOC (
 		instr_counter = 0;
 
 
-    	print_output_file =      $fopen("./dumps/print_output_file.txt", "w");
+    	// print_output_file =      $fopen("./dumps/print_output_file.txt", "w");
+
+		$display("start of log file");
+
 
 
 
@@ -680,7 +683,7 @@ module SOC (
 
 	always @(posedge time_violation) begin
 		$display("maximum simulation time reached. please reduce your code run time. sorry :(");
-        $fdisplay(print_output_file,"maximum simulation time reached. please reduce your code run time. sorry :(");
+        // $fdisplay(print_output_file,"maximum simulation time reached. please reduce your code run time. sorry :(");
         $finish();
 	end
 
@@ -694,7 +697,7 @@ module SOC (
 		$display("\n\n\n!!!!!!!!! EXCEPTION CODE: %d\n\n\n", exception_code);
 		$display("exception: %s", exception_labels[exception_code]);
 		
-		$fdisplay(print_output_file,"runtime error occurred. error code: %d. description: %s", exception_code, exception_labels[exception_code]);
+		// $fdisplay(print_output_file,"runtime error occurred. error code: %d. description: %s", exception_code, exception_labels[exception_code]);
 		$finish();
 	end
 
@@ -907,6 +910,8 @@ always @(negedge clk) begin
 					if (soc_verbose) $display("STORE");
 					end
 				isSYSTEM: begin 
+					$display("end of log file");
+
 					$display("\n\n\n--------------------------> SYSTEM \n gracefull exit  0x00100073 at %d", $time);
 					$display("________________________________________________________________________________________");
 					$display("________________________________________________________________________________________");
@@ -1002,8 +1007,14 @@ always @(negedge clk) begin
 			end else if (isPRINT) begin
 
 				case (funct3)
-					3'b000: $fdisplay(print_output_file,"%d", rs1);
-					3'b001: $fdisplay(print_output_file,"%f", $bitstoreal(display_float_rs1_f));
+					3'b000: begin
+						// $fdisplay(print_output_file,"%d", rs1);
+						$display("%d", rs1);
+						end
+					3'b001: begin
+						// $fdisplay(print_output_file,"%f", $bitstoreal(display_float_rs1_f));
+						$display("%f", $bitstoreal(display_float_rs1_f));
+						end
 				endcase
     			
 

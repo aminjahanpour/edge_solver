@@ -7,7 +7,7 @@ SECTIONS
     everything :
     {
 	. = ALIGN(4);
-	/home/amin/risc-v_edge_solver/hex_c/start.o (.text)
+	/home/sammy/myproject/risc-v/hex_c/start.o (.text)
         *(.*)
     } >BRAM
 }
