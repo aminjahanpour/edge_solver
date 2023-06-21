@@ -1,20 +1,20 @@
 # Edge Solver
 This repo contains the Edge Solver source code running based on an RV32IF RISC-V computing core all written in Verilog.
 
-[A live demo of this work is presented here](https://parniatech.com/demo)
+[A live demo of this work is presented here.](https://parniatech.com/demo)
 
 
 
 
-Steps to use this computing core:
+Steps to use this computing core on your Linux machine:
 
-1- Write a C code of choice
+1. Write a C code of choice
 
-2- Install [GNU GCC compiler for RISC-V](https://github.com/riscv-collab/riscv-gnu-toolchain) and compile your code into assembly (a MAKE file for this step is included in this repo)
+2. Use the MAKE file to compile your code into assembly (see the workflow section in below)
 
-3- Now you can use the computing core (presented in this repo) to run your assembly code (see the workflow section in below)
+3. Now you can use this computing core to execute the assembly instructions.
 
-This RISC-V core executes the instructions under simulation. All simulations are performed by APIO which is a Verilog simulator.
+This RISC-V core executes the instructions under simulation. All simulations are performed by [APIO](https://apiodoc.readthedocs.io/en/stable/) which is an open source ecosystem for open FPGA boards.
 
 
 As always, no licensing. Free to the public with no limitation :)
@@ -31,6 +31,11 @@ and then
     $ apio install --all
 
 If you are new to `apio` here is [a good tutorial for it](https://www.youtube.com/watch?v=lLg1AgA2Xoo&list=PLEBQazB0HUyT1WmMONxRZn9NmQ_9CIKhb).
+
+Next, you need to download [GNU GCC compiler for RISC-V](https://github.com/riscv-collab/riscv-gnu-toolchain) one your machine.
+
+then you need to inject my custom instructions into the toolchain and finally build the toolchain following the instructions provided by toolchain github repo.
+
 ### Workflow:
 
 Folder [hex_c](./hex_c) contains the make file to build your C code and generate 
