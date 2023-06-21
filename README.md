@@ -35,7 +35,68 @@ If you are new to `apio` here is [a good tutorial for it](https://www.youtube.co
 
 Next, you need to download [GNU GCC compiler for RISC-V](https://github.com/riscv-collab/riscv-gnu-toolchain) one your machine.
 
-then you need to inject my custom instructions into the toolchain and finally build the toolchain following the instructions provided by toolchain github repo.
+then you need to inject my custom instructions into the toolchain and finally build the toolchain following the instructions provided by toolchain GitHub repo.
+
+
+### Custom Instructions
+
+I have created 5 new instructions to be added to existing RISC-V ones.
+What they do and their usage is well explained [in here](https://parniatech.com/demo).
+Here we go through how to add them to the GNU toolchain before building it.
+
+First of all, here are a number of great tutorials that go through great details about hot to add custom instructions to the toolchain.
+1. [Tutorial 1](https://hsandid.github.io/posts/risc-v-custom-instruction/)
+2. [Tutorial 2](https://medium.com/@viveksgt/adding-custom-instructions-compilation-support-to-riscv-toolchain-78ce1b6efcf4)
+3. [Tutorial 3](https://phdbreak99.github.io/riscv-training/16-demo.custom-inst/)
+
+If you fully read the first tutorial, then you'd know what to do with my new instructions but I go through it anyway.
+
+1. modifying **riscv-opc.c**
+    
+    add these lines to `/binutils/opcodes/riscv-opc.c` as new items under `const struct riscv_opcode riscv_opcodes[]`
+    
+* {"par_rst", 0, INSN_CLASS_F, "D,S,T", MATCH_PAR_RST, MASK_PAR_RST, match_opcode, 0},
+* {"par_ask", 0, INSN_CLASS_F, "D,S,T", MATCH_PAR_ASK, MASK_PAR_ASK, match_opcode, 0},
+* {"par_tell", 0, INSN_CLASS_F, "D,S,T", MATCH_PAR_TELL, MASK_PAR_TELL, match_opcode, 0},
+* {"par_print_int", 0, INSN_CLASS_F, "D,S,T", MATCH_PAR_PRINT_INT, MASK_PAR_PRINT_INT, match_opcode, 0},
+* {"par_print_float", 0, INSN_CLASS_F, "D,S,T", MATCH_PAR_PRINT_FLOAT, MASK_PAR_PRINT_FLOAT, match_opcode, 0},
+
+
+
+2. modifying **riscv-opc.h**
+
+    add these lines to `/binutils/include/opcode/riscv-opc.h` under the `define` section.
+
+  
+* #define MATCH_PAR_RST 0xb
+* #define MASK_PAR_RST 0xfe00707f
+* #define MATCH_PAR_ASK 0x100b
+* #define MASK_PAR_ASK 0xfe00707f
+* #define MATCH_PAR_TELL 0x200b
+* #define MASK_PAR_TELL 0xfe00707f
+* #define MATCH_PAR_PRINT_INT 0x2b
+* #define MASK_PAR_PRINT_INT 0xfe00707f
+* #define MATCH_PAR_PRINT_FLOAT 0x102b
+* #define MASK_PAR_PRINT_FLOAT 0xfe00707f
+
+
+add these lines to `/binutils/include/opcode/riscv-opc.h` under the `DECLARE` secion.
+
+
+* DECLARE_INSN(par_rst, MATCH_PAR_RST, MASK_PAR_RST)
+* DECLARE_INSN(par_ask, MATCH_PAR_ASK, MASK_PAR_ASK)
+* DECLARE_INSN(par_tell, MATCH_PAR_TELL, MASK_PAR_TELL)
+* DECLARE_INSN(par_print_int, MATCH_PAR_PRINT_INT, MASK_PAR_PRINT_INT)
+* DECLARE_INSN(par_print_float, MATCH_PAR_PRINT_FLOAT, MASK_PAR_PRINT_FLOAT)
+
+
+3. repeat step 2 for `/gdb/include/opcode/riscv-opc.h`.
+
+Now you are ready to build the toolchain by following steps under [Installation (Newlib)](https://github.com/riscv-collab/riscv-gnu-toolchain).
+Notes:
+* Expect something around one hour for build time.
+* Make sure you include the build folder in the path. You need to end up with something like this in your path: `/opt/riscv_toolchain/bin`
+
 
 ### Workflow:
 
