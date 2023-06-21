@@ -1,11 +1,12 @@
 # Edge Solver
 This repo contains the Edge Solver source code running based on an RV32IF RISC-V computing core all written in Verilog.
 
-a live demo of this work in presented here:
-https://parniatech.com/demo
+[A live demo of this work is presented here](https://parniatech.com/demo)
 
 
-Usage is like this:
+
+
+Steps to use this computing core:
 
 1- Write a C code of choice
 
