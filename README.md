@@ -1,8 +1,6 @@
 # Edge Solver
 This repo contains the Edge Solver source code running based on an RV32IF RISC-V computing core all written in Verilog.
 
-[A live demo of this work is presented here.](https://parniatech.com/demo)
-
 
 
 
@@ -10,13 +8,16 @@ Steps to use this computing core on your Linux machine:
 
 1. Write a C code of choice
 
-2. Use the MAKE file to compile your code into assembly (see the workflow section in below)
+2. Use the MAKE file to compile your code into assembly (details in Workflow section in below)
 
 3. Now you can use this computing core to execute the assembly instructions.
 
-This RISC-V core executes the instructions under simulation. All simulations are performed by [APIO](https://apiodoc.readthedocs.io/en/stable/) which is an open source ecosystem for open FPGA boards.
+#### Notes:
+- This RISC-V core executes the instructions under simulation.
+- All simulations are performed by [APIO](https://apiodoc.readthedocs.io/en/stable/) which is an open source ecosystem for open FPGA boards.
+- This computing core is not pipelined.
 
-
+#### Licencing:
 As always, no licensing. Free to the public with no limitation :)
 
 
@@ -90,6 +91,13 @@ The [Edge Solver](bite_operations.v) uses this file for its own business.
 [soc_tb.v](soc_tb.v) is the test bench for the main module which is [soc.v](soc.v).
 
 [./dumps](./dumps) folder is where simulation outputs are dumped.
+
+
+### Live Demo
+[A live demo of this work is presented here.](https://parniatech.com/demo)
+The demo runs on the cloud by a Flask API. It can build your code all right.
+But APIO seems to have issues being invoked by Flask Python. So the run does not work yet. I will figure out a way around it.
+Until then, if you want to download and run this code on you local machine, everything would work absolutely fine.
 
 ### Credits:
 
