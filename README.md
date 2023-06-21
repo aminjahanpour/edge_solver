@@ -1,7 +1,22 @@
 # Edge Solver
 This repo contains the Edge Solver source code running based on an RV32IF RISC-V computing core all written in Verilog.
 
-As always, no licensing. Free to public with no limitation :)
+a live demo of this work in presented here:
+https://parniatech.com/demo
+
+
+Usage is like this:
+
+1- Write a C code of choice
+
+2- Install [GNU GCC compiler for RISC-V](https://github.com/riscv-collab/riscv-gnu-toolchain) and compile your code into assembly (a MAKE file for this step is included in this repo)
+
+3- Now you can use the computing core (presented in this repo) to run your assembly code (see the workflow section in below)
+
+This RISC-V core executes the instructions under simulation. All simulations are performed by APIO which is a Verilog simulator.
+
+
+As always, no licensing. Free to the public with no limitation :)
 
 
 
