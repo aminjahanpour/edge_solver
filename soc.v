@@ -640,7 +640,7 @@ module SOC (
 		instr_counter = 0;
 
 
-    	// print_output_file =      $fopen("./dumps/print_output_file.txt", "w");
+    	print_output_file =      $fopen("./dumps/print_output_file.txt", "w");
 
 		$display("start of log file");
 
@@ -650,7 +650,7 @@ module SOC (
 		main_loop_flag = 1;
 
 
-		
+
 	end
 
 
@@ -665,7 +665,7 @@ module SOC (
 
 
 	always @(posedge clocked_instructions_finished) begin
-		
+
 		clocked_instructions_go = 0;
 
 		main_loop_flag = 1;
@@ -673,7 +673,7 @@ module SOC (
 	end
 
 	always @(posedge bite_instructions_finished) begin
-		
+
 		bite_instructions_go = 0;
 
 		main_loop_flag = 1;
@@ -683,7 +683,7 @@ module SOC (
 
 	always @(posedge time_violation) begin
 		$display("maximum simulation time reached. please reduce your code run time. sorry :(");
-        // $fdisplay(print_output_file,"maximum simulation time reached. please reduce your code run time. sorry :(");
+        $fdisplay(print_output_file,"maximum simulation time reached. please reduce your code run time. sorry :(");
         $finish();
 	end
 
@@ -696,8 +696,8 @@ module SOC (
 	always @(posedge exception) begin
 		$display("\n\n\n!!!!!!!!! EXCEPTION CODE: %d\n\n\n", exception_code);
 		$display("exception: %s", exception_labels[exception_code]);
-		
-		// $fdisplay(print_output_file,"runtime error occurred. error code: %d. description: %s", exception_code, exception_labels[exception_code]);
+
+		$fdisplay(print_output_file,"runtime error occurred. error code: %d. description: %s", exception_code, exception_labels[exception_code]);
 		$finish();
 	end
 
@@ -706,10 +706,10 @@ module SOC (
 
 
 
-	wire 	need_to_write_back_to_either_register_files = ( 
-						(isALUreg || 
-						isALUimm || 
-						isJAL    || 
+	wire 	need_to_write_back_to_either_register_files = (
+						(isALUreg ||
+						isALUimm ||
+						isJAL    ||
 						isJALR   ||
 						isLUI    ||
 						isAUIPC	 ||
@@ -721,7 +721,7 @@ module SOC (
 						)
 						);
 
-   
+
 
 
 	/*
@@ -730,7 +730,7 @@ module SOC (
 	*/
    assign writeBackData = 	(isJAL || isJALR) ? (PC + 4) :
 							(isLUI) ? Uimm :
-							(isAUIPC) ? (PC + Uimm) : 
+							(isAUIPC) ? (PC + Uimm) :
 							(isLoad) ? (LOAD_data):
 							(isPAR) ? (bite_instructions_results):
 							(isDIV) ? (toolkit.fixed_point_to_float_sp(division_q)):
@@ -738,15 +738,15 @@ module SOC (
 							(
 								(isOpFp) ? fpuOut : aluOut
 								);
-   
+
    assign writeBackData_f = writeBackData;
-   
 
 
 
 
 
-//    assign nextPC = 	(isBranch && takeBranch) ? 	PC  + Bimm :	       
+
+//    assign nextPC = 	(isBranch && takeBranch) ? 	PC  + Bimm :
 //    	                isJAL                    ? 	PC  + Jimm :
 // 	                isJALR                   ? 	rs1 + Iimm :
 // 	                							PC	+	4;
@@ -762,7 +762,7 @@ module SOC (
 
 	where in memory do I want to read from?
 
-	I want to read from an address equal to whatever is 
+	I want to read from an address equal to whatever is
 	stored in register a1, plus an offset value of 4.
 
 	offset values need to be multiples of 4.
@@ -789,7 +789,7 @@ module SOC (
 
 always @(negedge clk) begin
 	if (main_loop_flag) begin
-		
+
 		lagger = lagger + 1;
 
 		if (lagger == 1) begin
@@ -803,7 +803,7 @@ always @(negedge clk) begin
 			// Note that our although our memory width is 32, the program addresses the memory per byte.
 			// PC increases by 4 to respect and follow exactly this behaviour.
 			// here we are reading a full word, so to build our mem_read_address we simply ignore the 2 LSB bits of PC.
-			// this is not the case while loading and saving. 
+			// this is not the case while loading and saving.
 
 			mem_read_addr = PC[register_width - 1 	: 	2];
 			mem_read_enable = 1;
@@ -811,7 +811,7 @@ always @(negedge clk) begin
 		end else if (lagger == 2) begin
 			instr = mem_rdata;
 
-			
+
 
 			mem_read_enable = 0;
 
@@ -830,10 +830,10 @@ always @(negedge clk) begin
 
 
 			if (isLoad) begin
-				
+
 				if (soc_verbose) $display("%h: LOAD %s   %s,    %d(%s)                 loadstore_addr:%d", PC, (isFloatIO) ? "flw" : "lx", (isFloatIO) ? reg_labels_float[rdId] : reg_labels[rdId], $signed(Iimm), reg_labels[rs1Id], loadstore_addr);
-				
-				
+
+
 
 				// if (soc_verbose) $display("LOAD loadstore_addr:%d = rs1:%d(%s) + Iimm:%d", loadstore_addr, rs1, reg_labels[rs1Id], Iimm);
 
@@ -844,7 +844,7 @@ always @(negedge clk) begin
 				if (soc_verbose) $display("LOAD load addr %d from memory and save it to %d-th register (%s)", mem_read_addr, rdId, (isFloatIO) ? reg_labels_float[rdId] : reg_labels[rdId] );
 
 			end else if (isStore) begin
-				
+
 				if (soc_verbose) $display("%h: STORE %s   mask:%b   %s,    %d(%s)                 loadstore_addr:%d",
 				 PC, (isFloatIO) ? "fsw" : "sx", STORE_wmask, (isFloatIO) ? reg_labels_float[rs2Id] : reg_labels[rs2Id], $signed(Simm), reg_labels[rs1Id], loadstore_addr);
 
@@ -869,7 +869,7 @@ always @(negedge clk) begin
 		end else if (lagger == 4) begin
 
 			case (1'b1)
-				isALUreg: begin 
+				isALUreg: begin
 							// $display("ALUreg \trdId=%d \trs1Id=%d \trs2Id=%d \tfunct3=%b",rdId, rs1Id, rs2Id, funct3);
 							// $display("aluOut:%d(@%d)   =   rs1:%d(@%d)   OP   rs2:%d(@%d), :", aluOut, rdId, rs1, rs1Id, rs2, rs2Id);
 
@@ -884,18 +884,18 @@ always @(negedge clk) begin
 							if (soc_verbose) $display("%h: BRANCH", PC);
 							if (soc_verbose) $display("rs1:%d(@%d)   OP   rs2:%d(@%d), Bimm:%b", rs1, rs1Id, rs2, rs2Id, Bimm);
 							end
-				isJAL:    begin 
-					if (soc_verbose)  $display("JAL"); 
+				isJAL:    begin
+					if (soc_verbose)  $display("JAL");
 					end
-				isJALR:   begin 
+				isJALR:   begin
 					// $display("%h: JALR   %d(%s),  # %h(jumping %d)", PC, rs1 ,  reg_labels[rdId], rs1 + Iimm, rs1 + Iimm);
 					// if (soc_verbose) $display("%h: JALR   %s, rs1:(%s) %d,  imm: %d, #    PC <= %d (0x %h)", PC, reg_labels[rdId], reg_labels[rs1Id], rs1 ,  Iimm, rs1 + Iimm, rs1 + Iimm);
 					if (soc_verbose) $display("%h: JALR   %s, %d(%s)                         PC <= %d (0x %h)", PC, reg_labels[rdId], $signed(Iimm), reg_labels[rs1Id], rs1 + Iimm, rs1 + Iimm);
 					end
-				isAUIPC:  begin 
+				isAUIPC:  begin
 							if (soc_verbose) $display("%h: AUIPC    %s  , 0x%h",  PC, reg_labels[rdId], Uimm >> 12);
 							end
-				isLUI:    begin 
+				isLUI:    begin
 							if (soc_verbose) $display("%h: LUI    %s  , 0x%h", PC,  reg_labels[rdId], Uimm >> 12);
 							end
 				isLoad:   begin
@@ -906,10 +906,10 @@ always @(negedge clk) begin
 							if (soc_verbose) $display("LOAD mem_byteAccess:%b, mem_halfwordAccess:%b, LOAD_sign:%b, LOAD_data:0x %h (%b)", mem_byteAccess, mem_halfwordAccess, LOAD_sign, LOAD_data, LOAD_data);
 
 					end
-				isStore:  begin 
+				isStore:  begin
 					if (soc_verbose) $display("STORE");
 					end
-				isSYSTEM: begin 
+				isSYSTEM: begin
 					$display("end of log file");
 
 					$display("\n\n\n--------------------------> SYSTEM \n gracefull exit  0x00100073 at %d", $time);
@@ -938,24 +938,24 @@ always @(negedge clk) begin
 				isOpFp: begin
 					if (soc_verbose) $display("Float Operation isOpFp:%b, isFloatIO:%b, isDIV:%b, isSQRT:%b", isOpFp, isFloatIO, isDIV, isSQRT);
 					if (soc_verbose) $display("%h: OpFp  \t fpuOut:%f(%s)   =   rs1_f:%f(%s)   OP   rs2:%f(%s)     OP    rs3:%f(%s)",
-					 PC,  $bitstoreal(display_float_fpuOut), reg_labels_float[rdId], 
-					 $bitstoreal(display_float_rs1_f), reg_labels_float[rs1Id], 
+					 PC,  $bitstoreal(display_float_fpuOut), reg_labels_float[rdId],
+					 $bitstoreal(display_float_rs1_f), reg_labels_float[rs1Id],
 					 $bitstoreal(display_float_rs2_f), reg_labels_float[rs2Id],
 					 $bitstoreal(display_float_rs3_f), reg_labels_float[rs3Id]
-					 
+
 					 );
 				end
 
 
 				isDIV: begin
 					 	if (soc_verbose) $display("isDIV");
-					
+
 				end
 
 
 				isSQRT: begin
 					 	if (soc_verbose) $display("isSQRT");
-					
+
 				end
 
 				isPRINT: begin
@@ -964,11 +964,11 @@ always @(negedge clk) begin
 
 
 				default: begin
-					$display("\n\n!!!!!!!!!!!!!!!!!!!!!!!!!! unrecognized instruction\nisOpFp:%b\nisFloatIO:%b\n\n\n\n", isOpFp, isFloatIO); 
+					$display("\n\n!!!!!!!!!!!!!!!!!!!!!!!!!! unrecognized instruction\nisOpFp:%b\nisFloatIO:%b\n\n\n\n", isOpFp, isFloatIO);
 
-					$finish; 
+					$finish;
 					end
-			endcase 
+			endcase
 
 
 
@@ -977,7 +977,7 @@ always @(negedge clk) begin
 
 				main_loop_flag = 0;
 				// setting and launching clocked_instruction
-				bite_instructions_input_var_0 = rs1_f; // this should be rs1_f!! 
+				bite_instructions_input_var_0 = rs1_f; // this should be rs1_f!!
 				bite_instructions_input_var_1 = rs2_f;
 				bite_instructions_go = 1;
 
@@ -994,12 +994,12 @@ always @(negedge clk) begin
 
 				main_loop_flag = 0;
 				// setting and launching division (clocked)
-				
+
 				sqrt_rad = toolkit.float_sp_to_fixed_point_64_64(rs1_f);
 				if (sqrt_rad[q_full - 1]) begin
 
 					exception_code = 5;
-					exception = 1;					
+					exception = 1;
 				end else begin
 					sqrt_start = 1;
 				end
@@ -1008,11 +1008,11 @@ always @(negedge clk) begin
 
 				case (funct3)
 					3'b000: begin
-						// $fdisplay(print_output_file,"%d", rs1);
+						$fdisplay(print_output_file,"%d", rs1);
 						$display("%d", rs1);
 						end
 					3'b001: begin
-						// $fdisplay(print_output_file,"%f", $bitstoreal(display_float_rs1_f));
+						$fdisplay(print_output_file,"%f", $bitstoreal(display_float_rs1_f));
 						$display("%f", $bitstoreal(display_float_rs1_f));
 						end
 				endcase
