@@ -1,10 +1,13 @@
 # Edge Solver
 This repo contains the Edge Solver source code running based on an RV32IF RISC-V computing core all written in Verilog.
 
+### Live Demo
+[A live demo of this work is presented here.](https://parniatech.com/demo)
+The demo runs on the cloud by a Flask API.
 
 
 
-Steps to use this computing core on your Linux machine:
+### Steps to use this computing core on your Linux machine:
 
 1. Write a C code of choice
 
@@ -154,11 +157,6 @@ The [Edge Solver](bite_operations.v) uses this file for its own business.
 [./dumps](./dumps) folder is where simulation outputs are dumped.
 
 
-### Live Demo
-[A live demo of this work is presented here.](https://parniatech.com/demo)
-The demo runs on the cloud by a Flask API. It can build your code all right.
-But APIO seems to have issues being invoked by Flask Python. So the run does not work yet. I will figure out a way around it.
-Until then, if you want to download and run this code on you local machine, everything would work absolutely fine.
 
 ### Credits:
 
