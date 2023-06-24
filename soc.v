@@ -232,7 +232,8 @@ module SOC (
 	memory #(
 		.mem_width(register_width),
 		.mem_depth(main_memory_depth),
-		.initial_file("/home/sammy/myproject/risc-v/program.hex")
+//		.initial_file("/home/sammy/myproject/risc-v/program.hex")
+		.initial_file("/home/amin/bucking_html/risc-v/program.hex")
 
 	) main_mem(
 		.clk(clk),

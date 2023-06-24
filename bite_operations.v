@@ -211,7 +211,7 @@ always @(posedge reset) begin
 
     // N0_output_file_random_values =                            $fopen("./dumps/N0_output_file_random_values.txt", "w");
 
-    // V1_output_file_evaluations =                              $fopen("./dumps/V1_output_file_evaluations.txt", "w");
+    V1_output_file_evaluations =                              $fopen("./V1_output_file_evaluations.txt", "w");
 
 
 
