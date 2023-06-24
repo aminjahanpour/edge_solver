@@ -7,7 +7,7 @@ SECTIONS
     everything :
     {
 	. = ALIGN(4);
-	/home/amin/bucking_html/risc-v/hex_c/start.o (.text)
+	/home/sammy/myproject/risc-v/hex_c/start.o (.text)
         *(.*)
     } >BRAM
 }
