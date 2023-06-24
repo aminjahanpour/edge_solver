@@ -11,8 +11,8 @@ int main()
 
     float c;
 
-    c = cos(2.0F * pi * 180.0F);
-//    c = pi/b;
+    // c = cos(2.0F * pi * 180.0F);
+    c = pi/b;
 //    c = sqrt(pi);
 //    c = exp(pi);
 //    c = log(pi);

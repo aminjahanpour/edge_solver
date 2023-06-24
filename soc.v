@@ -232,7 +232,7 @@ module SOC (
 	memory #(
 		.mem_width(register_width),
 		.mem_depth(main_memory_depth),
-		.initial_file("./program.hex")
+		.initial_file("/home/amin/bucking_html/risc-v/program.hex")
 
 	) main_mem(
 		.clk(clk),
@@ -245,9 +245,9 @@ module SOC (
 		.w_mask(STORE_wmask)
 	);
 
-    
+
 	// what we are going to write on the memory depends on the instruction being integer or float
-	assign mem_wdata = (isFloatIO) ? rs2_f : rs2;	
+	assign mem_wdata = (isFloatIO) ? rs2_f : rs2;
 
 
 
@@ -280,13 +280,13 @@ module SOC (
 	// Decoder
 
     // The 10 RISC-V basic instructions
-    wire isALUreg  =  ((instr[6:0] == 7'b0110011) || (instr[6:0] == 7'b0111011)); // rd <- rs1 OP rs2   
+    wire isALUreg  =  ((instr[6:0] == 7'b0110011) || (instr[6:0] == 7'b0111011)); // rd <- rs1 OP rs2
     wire isALUimm  =  ((instr[6:0] == 7'b0010011) || (instr[6:0] == 7'b0010011) || (instr[6:0] == 7'b0011011)); // rd <- rs1 OP Iimm
     wire isBranch  =  ( instr[6:0] == 7'b1100011); // if(rs1 OP rs2) PC<-PC+Bimm
     wire isJALR    =  ( instr[6:0] == 7'b1100111); // rd <- PC+4; PC<-rs1+Iimm
     wire isJAL     =  ( instr[6:0] == 7'b1101111); // rd <- PC+4; PC<-PC+Jimm
     wire isAUIPC   =  ( instr[6:0] == 7'b0010111); // rd <- PC + Uimm
-    wire isLUI     =  ( instr[6:0] == 7'b0110111); // rd <- Uimm   
+    wire isLUI     =  ( instr[6:0] == 7'b0110111); // rd <- Uimm
     wire isLoad    =  ((instr[6:0] == 7'b0000011) || (instr[6:0] == 7'b0000111)); // rd <- mem[rs1+Iimm]
     wire isStore   =  ((instr[6:0] == 7'b0100011) || (instr[6:0] == 7'b0100111)); // mem[rs1+Simm] <- rs2
     wire isSYSTEM  =  ( instr[6:0] == 7'b1110011); // special
@@ -294,10 +294,10 @@ module SOC (
 
 	// Floating point instructions
 	wire isOpFp	   =  	(
-						((instr[6:0] == 7'b1010011) && (instr[31:25] != 7'b0001100) && (instr[31:25] != 7'b0101100) ) +      // rd <- rs1 OP rs2 
-						(instr[6:0] == 7'b1000011) + // FMADD.S 
-						(instr[6:0] == 7'b1000111) + // FMSUB.S 
-						(instr[6:0] == 7'b1001011) + // FNMSUB.S 
+						((instr[6:0] == 7'b1010011) && (instr[31:25] != 7'b0001100) && (instr[31:25] != 7'b0101100) ) +      // rd <- rs1 OP rs2
+						(instr[6:0] == 7'b1000011) + // FMADD.S
+						(instr[6:0] == 7'b1000111) + // FMSUB.S
+						(instr[6:0] == 7'b1001011) + // FNMSUB.S
 						(instr[6:0] == 7'b1001111)   // FNMADD.S
 	) ;
 
@@ -307,7 +307,7 @@ module SOC (
 
 	wire isFMVXW   =  isOpFp && (instr[31 : 25] == 7'b11_10_000); // reads float, writes to integer
 	wire isFMVWX   =  isOpFp && (instr[31 : 25] == 7'b11_11_000); // reads integer, writes to float
-	
+
 
 	wire isFCVTWS  =  isOpFp && (instr[31 : 25] == 7'b11_00_000); // reads float, writes to integer
 
@@ -325,7 +325,7 @@ module SOC (
 	/*
 		isPAR:
 			These are the new instructions I introduced to work with Edge Solver
-		
+
 		isPRINT:
 			These are two new instructions used to print integer or float values into `print_output_file` file
 			which was declaired above
@@ -363,7 +363,7 @@ module SOC (
 	// there are expections where a float intruction needs to write its results into the integer resigter file
 	// here we flag that
 	wire	float_operation_writing_to_integer_register = (isFloatComparison | isFMVXW | isFCVTWS);
-   
+
 
 
 
@@ -479,7 +479,7 @@ module SOC (
 			.shift_amount(shift_amount),
 			.aluOut(aluOut)
 		);
- 
+
 
 
 	reg												takeBranch;
@@ -524,7 +524,7 @@ module SOC (
 			.rs1(rs1),
 			.fpuOut(fpuOut)
 		);
- 
+
 
 
 
@@ -556,7 +556,7 @@ module SOC (
 	clocked_operations #(
     .register_width(register_width)
 	) clocked_operations_ins(
-		.clk(clk),        
+		.clk(clk),
 		.go(clocked_instructions_go),
         .operation_id(clocked_instructions_operation_id),
 		.input_var_0(clocked_instructions_input_var_0),
@@ -584,7 +584,7 @@ module SOC (
     .register_width(register_width),
 	.max_time(max_time)
 	) bite_operations_ins(
-		.clk_bite(clk),        
+		.clk_bite(clk),
 		.go(bite_instructions_go),
 		.instr(instr),
 		.input_var_0(bite_instructions_input_var_0),
@@ -640,7 +640,7 @@ module SOC (
 		instr_counter = 0;
 
 
-    	print_output_file =      $fopen("./dumps/print_output_file.txt", "w");
+    	print_output_file =      $fopen("./print_output_file.txt", "w");
 
 		$display("start of log file");
 
